@@ -19,7 +19,7 @@ app.post("/add", (req, res) => {
   const cpee_callback_id = req.headers["cpee-callback-id"];
   console.log(cpee_callback);
 
-  fs.writeFile("/callbacks/" + cpee_callback_id, cpee_callback, (err) => {
+  fs.writeFile("/callbacks/" + cpee_callback_id, cpee_callback, { flag: "a" }, (err) => {
     if (err) {
       console.error(err);
     }
