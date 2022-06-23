@@ -3,6 +3,9 @@ var cors = require("cors");
 var app = express();
 var axios = require("axios");
 const fs = require("fs");
+const bodyParser = require("body-parser");
+var bodyparser = require(bodyParser);
+
 const port = 22666;
 
 app.use(cors());
@@ -14,7 +17,8 @@ app.get("/", (req, res) => {
 });
 
 app.post("/add", (req, res) => {
-  console.log("add task");
+  let request = Object.assign(req.query, req.body);
+  console.log(request);
   console.log(req.body);
   const cpee_callback = req.headers["cpee-callback"];
   const cpee_callback_id = req.headers["cpee-callback-id"];
