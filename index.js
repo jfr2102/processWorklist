@@ -22,7 +22,7 @@ app.get("/", (req, res) => {
 
 app.post("/add", (req, res) => {
   console.log(req.body);
-  const cpee_callback = req.headers["cpee-callback"];
+  const cpee_callback = req.headers["cpee-callback"].slice(0, -1);
   const cpee_callback_id = req.headers["cpee-callback-id"];
   console.log(cpee_callback);
 
