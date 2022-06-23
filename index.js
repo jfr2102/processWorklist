@@ -4,7 +4,6 @@ var app = express();
 var axios = require("axios");
 const fs = require("fs");
 const bodyParser = require("body-parser");
-var bodyparser = require(bodyParser);
 
 const port = 22666;
 
