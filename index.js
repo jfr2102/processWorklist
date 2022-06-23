@@ -15,8 +15,17 @@ app.get("/", (req, res) => {
 
 app.post("/add", (req, res) => {
   console.log("add task");
-  console.log(req.headers);
-  console.log(req.body);
+  const cpee_callback = req.headers["cpee-callback"];
+  const cpee_callback_id = req.heders["cpee-callback-id"];
+  console.log(rcpee_callback);
+
+  fs.writeFile("/callbacks/" + cpee_callback_id, cpee_callback, (err) => {
+    if (err) {
+      console.error(err);
+    }
+    // file written successfully
+  });
+
   res.set("CPEE-CALLBACK", true);
   res.json({ test: "newWorkListItem" });
 });
