@@ -35,7 +35,7 @@ app.post("/add", (req, res) => {
   res.set("CPEE-CALLBACK", true);
   res.json({ test: "newWorkListItem" });
 });
-///:id
+
 app.get("/callbacks/:id", (req, res) => {
   console.log("callbacks: " + req.params.id);
   axios
