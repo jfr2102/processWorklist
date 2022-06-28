@@ -24,9 +24,8 @@ app.post("/add", (req, res) => {
   console.log(req.body);
   const cpee_callback = req.headers["cpee-callback"].slice(0, -1);
   const cpee_callback_id = req.headers["cpee-callback-id"];
-  console.log(cpee_callback);
 
-  fs.writeFile("callbacks/" + cpee_callback_id, cpee_callback, { flag: "a" }, (err) => {
+  fs.writeFile("callbacks/" + cpee_callback_id, cpe_callback + ";" + JSON.stringify(req.body), { flag: "a" }, (err) => {
     if (err) {
       console.error(err);
     }
@@ -36,6 +35,7 @@ app.post("/add", (req, res) => {
   res.json({ test: "newWorkListItem" });
 });
 
+//brauche eig eig nciht da in file / db hier die info habe und client nicht hiervon direkt fetchen muss?
 app.get("/callbacks/:id", (req, res) => {
   console.log("callbacks: " + req.params.id);
   axios
