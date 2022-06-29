@@ -5,6 +5,8 @@ const Task = new mongoose.Schema(
         callbackUrl: String,
         asignee: String,
         deadline: Date,
+        taskname: String, 
+        uiLink: String,
         role: {
             type: String,
             enum: ["admin", "manager", "factory-worker" ],
