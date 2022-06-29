@@ -1,9 +1,9 @@
 import React from 'react'
 
-function orderChainSaw() {
+function OrderChainSaw() {
   return (
-    <div>orderChainSaw</div>
+    <div>OrderChainSaw</div>
   )
 }
 
-export default orderChainSaw
+export default OrderChainSaw
