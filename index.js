@@ -4,9 +4,11 @@ var app = express();
 var axios = require("axios");
 const fs = require("fs");
 const mongoose = require("mongoose");
-var User = require("./models/userModel")
-var Task = require("./models/taskModel")
-const mongooseURL = "mongodb+srv://admin:HtNuRC5G0imkW7I5@cluster0.w8czfkx.mongodb.net/?retryWrites=true&w=majority";
+var User = require("./models/userModel");
+var Task = require("./models/taskModel");
+const { useParams } = require("react-router-dom");
+const mongooseURL =
+  "mongodb+srv://admin:HtNuRC5G0imkW7I5@cluster0.w8czfkx.mongodb.net/?retryWrites=true&w=majority";
 
 mongoose.connect(mongooseURL);
 
@@ -21,45 +23,59 @@ app.use(
   })
 );
 
-const schedule =  async () => {
-  console.log("Scheduling unassigned / overdue tasks")
-  const busyness = userWorkLoad();
+const schedule = async () => {
+  console.log("Scheduling unassigned / overdue tasks");
+  const busyness = await userWorkLoad();
+  busyness.sort((a, b) => {
+    a.user.taskCount - b.user.taskCount;
+  });
+  console.log(busyness);
+  console.log("_____________");
+  var admins = busyness.filter((tuple) => {
+    return tuple.user.role == "admin";
+  });
+  var factory_workers = busyness.filter((tuple) => {
+    return tuple.user.role === "factory_worker";
+  });
+  var managers = busyness.filter((tuple) => {
+    return tuple.user.role === "manager";
+  });
+  console.log("admins: " + admins);
 
-  admins = busyness.filter(user => { user.role === "admin"});
-  factory_workers = busyness.filter(user => { user.role === "factory_worker"});
-  manager = busyness.filter(user => { user.role === "manager"});
+  unassigned_tasks = await Task.find({ asignee: "" });
+  for (task of unassigned_tasks) {
+    switch (task.role) {
+      case "admin":
+        leastbusy = admins.filter((tuple) => {
+          return tuple.user.username !== task.lastAsigned;
+        })[0];
+      case "factory_worker":
+        leastbusy = factory_workers.filter((tuple) => {
+          return tuple.user.username !== task.lastAsigned;
+        })[0];
+      case "manager":
+        leastbusy = managers.filter((tuple) => {
+          return tuple.user.username !== task.lastAsigned;
+        })[0];
+    }
 
-  unassigned_tasks = await Task.find({assignee: ""});
-  for ( task of unassigned_tasks ) {
-
-    var leastbusy = {};
-
-   switch (task.role){
-    case "admin":
-      leastbusy = [...admins].sort((a,b) => a.taskCount - b.taskCount )[0];
-    case "factory_worker":
-      leastbusy = [...factory_workers].sort((a,b) => a.taskCount - b.taskCount )[0];
-    case "manager": 
-      leastbusy = [...manager].sort((a,b) => a.taskCount - b.taskCount )[0];
-   }
-   console.log("Scheduled for: " +  leastbusy.username)
-   Task.findByIdAndUpdate(task._id, {assignee: leastbusy.username})
+    await Task.findOneAndUpdate({ _id: task._id }, { asignee: leastbusy.user.username });
   }
-}
+};
 
-const userWorkLoad = async () =>  {
- // für alle nutzer die tasks rasusuchen die für ihn assigned sind
- users = await Users.find({});
- tasks = await Tasks.find({});
+const userWorkLoad = async () => {
+  // für alle nutzer die tasks rasusuchen die für ihn assigned sind
+  users = await User.find({});
+  tasks = await Task.find({});
 
- busyness = []
- for (user of users){
-  //size? 
-  hisTasks = tasks.filter((task) => task.assigne === user.username).length
-  busyness = [...busyness, {user: user, taskCount: hisTasks }]
-  return busyness;
- }
-}
+  busyness = [];
+  for (user of users) {
+    //size?
+    hisTasks = tasks.filter((task) => task.assigne === user.username).length;
+    busyness = [...busyness, { user: user, taskCount: hisTasks }];
+    return busyness;
+  }
+};
 
 app.get("/", (req, res) => {
   console.log(req.body);
@@ -73,24 +89,29 @@ app.post("worklist/add", async (req, res) => {
 
   try {
     await Task.create({
-    callbackId: cpee_callback_id,
-    callbackUrl: cpee_callback,
-    deadline: req.body.deadline,
-    taskname: req.body.taskname,
-    uiLink: req.body,
-    role: req.body.role
-
-  })
-} catch (exception) {
-  console.log(exception);
-}
-//schedule everything whenever a new task is added?
-schedule();
-  fs.writeFile("callbacks/" + cpee_callback_id, cpe_callback + ";" + JSON.stringify(req.body), { flag: "a" }, (err) => {
-    if (err) {
-      console.error(err);
+      callbackId: cpee_callback_id,
+      callbackUrl: cpee_callback,
+      deadline: req.body.deadline,
+      taskname: req.body.taskname,
+      uiLink: req.body,
+      role: req.body.role,
+      asignee: req.body.asignee,
+    });
+  } catch (exception) {
+    console.log(exception);
+  }
+  //schedule everything whenever a new task is added?
+  schedule();
+  fs.writeFile(
+    "callbacks/" + cpee_callback_id,
+    cpe_callback + ";" + JSON.stringify(req.body),
+    { flag: "a" },
+    (err) => {
+      if (err) {
+        console.error(err);
+      }
     }
-  });
+  );
 
   res.set("CPEE-CALLBACK", true);
   res.json({ test: "newWorkListItem" });
@@ -110,26 +131,80 @@ app.get("/callbacks/:id", (req, res) => {
     });
 });
 
-app.post("/user", (req,res) => {
-  User.create(req.body).then((result) => {
-    res.json(result)
-  }).catch((error) => {
-    console.log(error)
-  })
+app.post("/user", (req, res) => {
+  User.create(req.body)
+    .then((result) => {
+      res.json(result);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
 });
+
+app.get("/orgmodel", (req, res) => {
+  User.find({}, (err, result) => {
+    err ? res.status(500).json(err) : res.json(result);
+  });
+});
+
+app.get("/worklist/:user", (req, res) => {
+  // send back all worklist items that this user could pick up
+  console.log(req.params.user);
+  Task.find({ asignee: req.params.user }, (err, result) => {
+    if (err) {
+      res.status(500).json(err);
+    } else {
+      res.json(result);
+    }
+  });
+});
+
 app.get("/worklist", (req, res) => {
-  // send back all worklist items that this user could pick up 
- console.log("Get worklist for: " + req.body.user)
- Task.find({user: req.body.user}, (err, result) => {
-  if(err){
-    res.status(500).json(err);
-  } else {
-    res.json(result);
-  }
- })
+  Task.find({}, (err, result) => {
+    if (err) {
+      res.status(500).json(err);
+    } else {
+      res.json(result);
+    }
+  });
 });
 
+app.post("/worklist/addDummy", async (req, res) => {
+  console.log(req.body);
+  try {
+    await Task.create({
+      taskname: req.body.taskname,
+      uiLink: req.body.uiLink,
+      role: req.body.role,
+    });
+  } catch (exception) {
+    console.log(exception);
+  }
+  //schedule every unassigned or marked task whenever a new task is added //TODO: also add a timer to reschedule at least once a day e.g. (to check the deadlines)
+  schedule();
+  res.json("Added Taks");
+});
 
+app.delete("/worklist", async (req, res) => {
+  Task.deleteMany({}, (err, result) => {
+    if (err) {
+      res.status(500).json(err);
+    } else {
+      res.json(result);
+    }
+  });
+});
+
+app.patch("/worklist/unasign/:task", async (req, res) => {
+  console.log("UNASIGN:" + req.params.task);
+  const task = await Task.findById(req.params.task);
+
+  const updated = await Task.findByIdAndUpdate(req.params.task, {
+    asignee: "",
+    lastAsigned: task.asignee,
+  });
+  res.json(updated);
+});
 
 app.listen(port, () => {
   console.log(`listening on port ${port}`);

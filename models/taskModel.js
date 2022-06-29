@@ -1,18 +1,18 @@
 const mongoose = require("mongoose");
-const Task = new mongoose.Schema(
-    {
-        callbackId: String,
-        callbackUrl: String,
-        asignee: String,
-        deadline: Date,
-        taskname: String, 
-        uiLink: String,
-        role: {
-            type: String,
-            enum: ["admin", "manager", "factory-worker" ],
-            default: "factory-worker"
-        }
-    });
-    const model = mongoose.model("Task", Task)
+const Task = new mongoose.Schema({
+  callbackId: { type: String, required: false },
+  callbackUrl: { type: String, required: false },
+  asignee: { type: String, required: false },
+  lastAsigned: { type: String, required: false },
+  deadline: { type: Date, required: false },
+  taskname: { type: String, required: true },
+  uiLink: { type: String, required: false },
+  role: {
+    type: String,
+    enum: ["admin", "manager", "factory-worker"],
+    default: "factory-worker",
+  },
+});
+const model = mongoose.model("Task", Task);
 
-    module.exports = model;
+module.exports = model;
