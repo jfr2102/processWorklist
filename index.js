@@ -6,7 +6,7 @@ const fs = require("fs");
 const mongoose = require("mongoose");
 var User = require("./models/userModel")
 var Task = require("./models/taskModel")
-const mongooseURL = "";
+const mongooseURL = "mongodb+srv://admin:HtNuRC5G0imkW7I5@cluster0.w8czfkx.mongodb.net/?retryWrites=true&w=majority";
 
 mongoose.connect(mongooseURL);
 
