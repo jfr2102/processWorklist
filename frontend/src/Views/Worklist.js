@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import { Typography } from "@mui/material";
 import { TextField, Stack, Button } from "@mui/material";
@@ -11,32 +11,14 @@ import ListItemText from "@mui/material/ListItemText";
 import { Divider } from "@mui/material";
 import { IconButton } from "@mui/material";
 import PersonRemoveIcon from "@mui/icons-material/PersonRemove";
-import { useState } from "react";
 
-function Worklist() {
+import { useNavigate } from "react-router-dom";
+
+function Worklist({ setProcessContext, user, setUser }) {
   const local = true;
   const host = local ? "http://localhost:22666" : "https://lehre.bpm.in.tum.de/ports/22666";
-
-  const [tasks, setTasks] = useState([
-    {
-      _id: "62bc6096aaf812d96c9187bd",
-      taskname: "order Dummy",
-      uiLink: "somehwere",
-      role: "admin",
-      __v: 0,
-      asignee: "johannes",
-    },
-    {
-      _id: "62bc628154ba49821a8f452e",
-      taskname: "Task 2",
-      uiLink: "somehwere",
-      role: "admin",
-      __v: 0,
-      asignee: "johannes",
-    },
-  ]);
-
-  const [user, setUser] = useState("");
+  let navigate = useNavigate();
+  const [tasks, setTasks] = useState([]);
 
   const handleLogin = () => {
     console.log("login:" + user);
@@ -57,6 +39,11 @@ function Worklist() {
     });
   };
 
+  const handleTask = (task) => {
+    console.log(task);
+    //setProcessContext(task.processContext);
+    navigate(task.uiLink);
+  };
   return (
     <Box padding={3}>
       <Stack spacing={2}>
@@ -68,9 +55,10 @@ function Worklist() {
           label="Username"
           variant="outlined"
           onChange={(event) => setUser(event.target.value)}
+          onSubmit={handleLogin}
           sx={{ width: "20%" }}
         />
-        <Button variant="contained" sx={{ width: "10%" }} onClick={handleLogin}>
+        <Button type="submit" variant="contained" sx={{ width: "10%" }} onClick={handleLogin}>
           Submit
         </Button>
         <Typography variant="h5">Tasks assigned to you: </Typography>
@@ -87,7 +75,7 @@ function Worklist() {
                     </IconButton>
                   }
                 >
-                  <ListItemButton sx={{ color: "grey" }}>
+                  <ListItemButton sx={{ color: "grey" }} onClick={() => handleTask(task)}>
                     <ListItemText>
                       <Typography variant="normal">{task.taskname}</Typography>
                     </ListItemText>

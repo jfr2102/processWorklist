@@ -12,6 +12,7 @@ const Task = new mongoose.Schema({
     enum: ["admin", "manager", "factory-worker"],
     default: "factory-worker",
   },
+  processContext: { type: Object, required: false },
 });
 const model = mongoose.model("Task", Task);
 

@@ -32,7 +32,7 @@ const schedule = async () => {
   console.log(busyness);
   console.log("_____________");
   var admins = busyness.filter((tuple) => {
-    return tuple.user.role == "admin";
+    return tuple.user.role === "admin";
   });
   var factory_workers = busyness.filter((tuple) => {
     return tuple.user.role === "factory_worker";
@@ -40,22 +40,24 @@ const schedule = async () => {
   var managers = busyness.filter((tuple) => {
     return tuple.user.role === "manager";
   });
-  console.log("admins: " + admins);
 
   unassigned_tasks = await Task.find({ asignee: "" });
   for (task of unassigned_tasks) {
     switch (task.role) {
       case "admin":
+        //TODO FILTER wie unten:
         leastbusy = admins.filter((tuple) => {
-          return tuple.user.username !== task.lastAsigned;
+          return tuple.user.username != task.lastAsigned;
         })[0];
+
+        console.log(leastbusy);
       case "factory_worker":
         leastbusy = factory_workers.filter((tuple) => {
-          return tuple.user.username !== task.lastAsigned;
+          return tuple.user.username != task.lastAsigned;
         })[0];
       case "manager":
         leastbusy = managers.filter((tuple) => {
-          return tuple.user.username !== task.lastAsigned;
+          return tuple.user.username != task.lastAsigned;
         })[0];
     }
 
@@ -91,28 +93,16 @@ app.post("worklist/add", async (req, res) => {
     await Task.create({
       callbackId: cpee_callback_id,
       callbackUrl: cpee_callback,
-      deadline: req.body.deadline,
+      // deadline: req.body.deadline,
       taskname: req.body.taskname,
       uiLink: req.body,
       role: req.body.role,
-      asignee: req.body.asignee,
     });
   } catch (exception) {
     console.log(exception);
   }
   //schedule everything whenever a new task is added?
   schedule();
-  fs.writeFile(
-    "callbacks/" + cpee_callback_id,
-    cpe_callback + ";" + JSON.stringify(req.body),
-    { flag: "a" },
-    (err) => {
-      if (err) {
-        console.error(err);
-      }
-    }
-  );
-
   res.set("CPEE-CALLBACK", true);
   res.json({ test: "newWorkListItem" });
 });
@@ -204,6 +194,12 @@ app.patch("/worklist/unasign/:task", async (req, res) => {
     lastAsigned: task.asignee,
   });
   res.json(updated);
+});
+
+//UI send to this endpoint when completing the task
+app.delete("/worklist/:task", async (req, res) => {
+  task = await Task.findById(req.params.task);
+  axios.put(task.callbackUrl);
 });
 
 app.listen(port, () => {

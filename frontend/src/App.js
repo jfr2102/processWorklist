@@ -1,10 +1,14 @@
 // import Box from "@mui/material/Box";
+import { useState } from "react";
 import Worklist from "./Views/Worklist";
 import { Routes, Route } from "react-router-dom";
 import OrderChainSaw from "./Forms/OrderChainSaw";
 import CheckParts from "./Forms/CheckParts";
 import RecieveFeedback from "./Forms/RecieveFeedback";
 function App() {
+  const [processContext, setProcessContext] = useState({});
+  const [user, setUser] = useState("");
+
   const baseUrl = "/ports/8123/";
   return (
     <div>
@@ -19,10 +23,31 @@ function App() {
             </div>
           }
         />
-        <Route path={baseUrl + "ui"} element={<Worklist></Worklist>} />
-        <Route path={baseUrl + "orderchainsaw"} element={<OrderChainSaw></OrderChainSaw>} />
-        <Route path={baseUrl + "checkParts"} element={<CheckParts></CheckParts>} />
-        <Route path={baseUrl + "recieveFeedback"} element={<RecieveFeedback></RecieveFeedback>} />
+        <Route
+          path={baseUrl + "ui"}
+          element={<Worklist setProcessContext={setProcessContext} user={user} setUser={setUser} />}
+        />
+        <Route
+          path={baseUrl + "orderchainsaw"}
+          element={
+            <OrderChainSaw processContext={processContext} setProcessContext={setProcessContext} />
+          }
+        />
+        <Route
+          path={baseUrl + "checkParts"}
+          element={
+            <CheckParts processContext={processContext} setProcessContext={setProcessContext} />
+          }
+        />
+        <Route
+          path={baseUrl + "recieveFeedback"}
+          element={
+            <RecieveFeedback
+              processContext={processContext}
+              setProcessContext={setProcessContext}
+            />
+          }
+        />
       </Routes>
     </div>
   );
