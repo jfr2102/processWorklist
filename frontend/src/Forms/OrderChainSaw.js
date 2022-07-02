@@ -99,6 +99,8 @@ function OrderChainSaw({ host, task }) {
 
         {/* <Typography>Asignee: {task.asignee}</Typography> */}
       </Box>
+      <Typography>Process Instance: {task.processInstance}</Typography>
+      <Typography>{JSON.stringify(task.processContext)}</Typography>
     </Stack>
   );
 }

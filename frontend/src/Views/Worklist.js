@@ -78,7 +78,9 @@ function Worklist({ setProcessContext, user, setUser, host, setTask }) {
                 >
                   <ListItemButton sx={{ color: "grey" }} onClick={() => handleTask(task)}>
                     <ListItemText>
-                      <Typography variant="normal">{task.taskname}</Typography>
+                      <Typography variant="normal">
+                        {task.taskname + "(Process Instance: " + task.processInstance + " )"}
+                      </Typography>
                     </ListItemText>
                   </ListItemButton>
                 </ListItem>

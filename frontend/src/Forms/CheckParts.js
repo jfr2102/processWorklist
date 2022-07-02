@@ -95,6 +95,8 @@ function CheckParts({ host, task }) {
         </Stack>
         {/* <Typography>Asignee: {task.asignee}</Typography> */}
       </Box>
+      <Typography>Process Instance: {task.processInstance}</Typography>
+      <Typography>{JSON.stringify(task.processContext)}</Typography>
     </Stack>
   );
 }

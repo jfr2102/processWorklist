@@ -84,18 +84,20 @@ app.post("/worklist/add", async (req, res) => {
   console.log(req.body);
   const cpee_callback = req.headers["cpee-callback"].slice(0, -1);
   const cpee_callback_id = req.headers["cpee-callback-id"];
+  const cpee_instance = req.headers["cpee-instance"];
+  const cpee_label = req.headers["cpee-label"];
   console.log(req.headers);
   try {
     await Task.create({
       callbackId: cpee_callback_id,
       callbackUrl: cpee_callback,
-      deadline: req.body.deadline,
-      taskname: req.body.taskname,
+      processInstance: cpee_instance,
+      taskname: cpee_label,
+      asignee: "",
       uiLink: req.body.uiLink,
       role: req.body.role,
-      asignee: "",
-      processContext: {},
-      processInstance: 0,
+      deadline: req.body.deadline,
+      processContext: req.body.processContext,
     });
   } catch (exception) {
     console.log(exception);

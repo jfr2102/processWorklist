@@ -56,6 +56,9 @@ function RecieveFeedback({ host, task }) {
         </Stack>
         <Typography padding={1}>Asignee: </Typography>
       </Box>
+
+      <Typography>Process Instance: {task.processInstance}</Typography>
+      <Typography>{JSON.stringify(task.processContext)}</Typography>
     </Stack>
   );
 }
