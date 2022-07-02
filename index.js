@@ -174,9 +174,13 @@ app.delete("/worklist/:task", async (req, res) => {
   console.log("DONE: ", req.params.task, ", DATABODY: ", req.body);
   var task = await Task.findById(req.params.task);
   console.log(task);
-  await Task.findByIdAndDelete(req.params.task);
 
-  axios.put(task.callbackUrl, req.body);
+  var deleted = await Task.findByIdAndDelete(req.params.task);
+
+  axios
+    .put(task.callbackUrl, req.body)
+    .then((response) => console.log(reponse))
+    .catch((err) => console.log(err));
   res.json(task);
 });
 
