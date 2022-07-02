@@ -179,7 +179,7 @@ app.delete("/worklist/:task", async (req, res) => {
 
   axios
     .put(task.callbackUrl, req.body)
-    .then((response) => console.log(reponse))
+    .then((response) => console.log(response))
     .catch((err) => console.log(err));
   res.json(task);
 });
