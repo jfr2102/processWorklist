@@ -172,8 +172,11 @@ app.patch("/worklist/unasign/:task", async (req, res) => {
 //UI send to this endpoint when completing the task
 app.delete("/worklist/:task", async (req, res) => {
   console.log("DONE: ", req.params.task, ", DATABODY: ", req.body);
-  task = await Task.findById(req.params.task);
+  task = await Task.findById(req.params.task).catch((event) => {
+    console.log(event);
+  });
   axios.put(task.callbackUrl, req.body);
+  res.json(task);
 });
 
 app.listen(port, () => {
