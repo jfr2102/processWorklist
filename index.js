@@ -87,7 +87,7 @@ app.get("/", (req, res) => {
   res.send("Process Worklist API");
 });
 
-app.post("worklist/add", async (req, res) => {
+app.post("/worklist/add", async (req, res) => {
   console.log(req.body);
   const cpee_callback = req.headers["cpee-callback"].slice(0, -1);
   const cpee_callback_id = req.headers["cpee-callback-id"];
