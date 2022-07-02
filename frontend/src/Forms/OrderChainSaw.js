@@ -4,8 +4,10 @@ import { FormGroup, TextField, Typography, Stack, Button } from "@mui/material";
 import { useState } from "react";
 import { useLocation } from "react-router-dom";
 import Axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 function OrderChainSaw({ host, task }) {
+  const navigate = useNavigate();
   // const location = useLocation();
   // const task = location.state ? location.state.task : {};
   const [chainSawOrder, setChainSawOrder] = useState({
@@ -22,10 +24,11 @@ function OrderChainSaw({ host, task }) {
     setChainSawOrder({ ...chainSawOrder, [event.target.name]: event.target.value });
   };
 
-  const handleSubmit = () => {
-    Axios.delete(host + "/worklist/" + task._id, { data: chainSawOrder });
+  const handleSubmit = async () => {
+    console.log("delete: ", task, " with: ", chainSawOrder);
+    await Axios.delete(host + "/worklist/" + task._id, { data: chainSawOrder });
+    navigate("/ports/8123/ui");
   };
-
   return (
     <Stack direction="column" justifyContent="center" alignItems="center" paddingTop={5}>
       <Box bgcolor="whitesmoke" padding={2}>

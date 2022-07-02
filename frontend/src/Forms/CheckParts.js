@@ -3,8 +3,10 @@ import { Box } from "@mui/system";
 import { useState } from "react";
 import Axios from "axios";
 import { useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 function CheckParts({ host, task }) {
+  const navigate = useNavigate();
   const [checkPart, setCheckPart] = useState({
     gear_ok: true,
     case_ok: true,
@@ -17,8 +19,10 @@ function CheckParts({ host, task }) {
     setCheckPart({ ...checkPart, [event.target.name]: event.target.checked });
   };
 
-  const handleSubmit = () => {
-    Axios.delete(host + "/worklist/" + task._id, { data: checkPart });
+  const handleSubmit = async () => {
+    console.log("delete: ", task, " with: ", checkPart);
+    await Axios.delete(host + "/worklist/" + task._id, { data: checkPart });
+    navigate("/ports/8123/ui");
   };
 
   return (

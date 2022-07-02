@@ -13,6 +13,7 @@ const Task = new mongoose.Schema({
     default: "factory-worker",
   },
   processContext: { type: Object, required: false },
+  processInstance: Number,
 });
 const model = mongoose.model("Task", Task);
 
