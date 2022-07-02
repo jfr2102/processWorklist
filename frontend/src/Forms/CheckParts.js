@@ -1,9 +1,13 @@
-import React from "react";
+import { Button, Checkbox, FormControlLabel, FormGroup, Stack, Typography } from "@mui/material";
 import { Box } from "@mui/system";
-import { FormGroup, TextField, Typography, Stack, FormControlLabel, Checkbox } from "@mui/material";
 import { useState } from "react";
+import { Axios } from "axios";
+import { useLocation } from "react-router-dom";
 
-function CheckParts() {
+function CheckParts({ host }) {
+  const location = useLocation();
+  const task = location.state ? location.state.task : {};
+
   const [checkPart, setCheckPart] = useState({
     gear_ok: true,
     case_ok: true,
@@ -16,13 +20,17 @@ function CheckParts() {
     setCheckPart({ ...checkPart, [event.target.name]: event.target.checked });
   };
 
+  const handleSubmit = () => {
+    Axios.delete(host + "/worklist/" + task.id, { data: checkPart });
+  };
+
   return (
     <Stack direction="column" justifyContent="center" alignItems="center" paddingTop={5}>
       <Box bgcolor="whitesmoke" padding={2}>
         <Typography variant="h5" padding={1}>
           Check Parts
         </Typography>
-        <Stack spacing={1}>
+        <Stack spacing={1} justifyContent="center" alignItems="center">
           <FormGroup>
             <FormControlLabel
               control={
@@ -80,8 +88,11 @@ function CheckParts() {
               label="Chain OK"
             />
           </FormGroup>
+          <Button type="submit" variant="contained" sx={{ width: "10%" }} onClick={handleSubmit}>
+            Submit
+          </Button>
         </Stack>
-        <Typography>Asignee: </Typography>
+        {/* <Typography>Asignee: {task.asignee}</Typography> */}
       </Box>
     </Stack>
   );

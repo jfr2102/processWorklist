@@ -14,9 +14,7 @@ import PersonRemoveIcon from "@mui/icons-material/PersonRemove";
 
 import { useNavigate } from "react-router-dom";
 
-function Worklist({ setProcessContext, user, setUser }) {
-  const local = false;
-  const host = local ? "http://localhost:22666" : "https://lehre.bpm.in.tum.de/ports/22666";
+function Worklist({ setProcessContext, user, setUser, host }) {
   let navigate = useNavigate();
   const [tasks, setTasks] = useState([]);
 
@@ -42,7 +40,7 @@ function Worklist({ setProcessContext, user, setUser }) {
   const handleTask = (task) => {
     console.log(task);
     //setProcessContext(task.processContext);
-    navigate(task.uiLink);
+    navigate(task.uiLink, { state: task });
   };
   return (
     <Box padding={3}>

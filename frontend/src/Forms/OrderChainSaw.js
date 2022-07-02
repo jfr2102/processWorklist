@@ -1,9 +1,13 @@
 import React from "react";
 import { Box } from "@mui/system";
-import { FormGroup, TextField, Typography, Stack } from "@mui/material";
+import { FormGroup, TextField, Typography, Stack, Button } from "@mui/material";
 import { useState } from "react";
+import { useLocation } from "react-router-dom";
+import { Axios } from "axios";
 
-function OrderChainSaw() {
+function OrderChainSaw({ host }) {
+  const location = useLocation();
+  const task = location.state ? location.state.task : {};
   const [chainSawOrder, setChainSawOrder] = useState({
     name: "",
     guide_bar: "",
@@ -18,13 +22,17 @@ function OrderChainSaw() {
     setChainSawOrder({ ...chainSawOrder, [event.target.name]: event.target.value });
   };
 
+  const handleSubmit = () => {
+    Axios.delete(host + "/worklist/" + task.id, { data: chainSawOrder });
+  };
+
   return (
     <Stack direction="column" justifyContent="center" alignItems="center" paddingTop={5}>
       <Box bgcolor="whitesmoke" padding={2}>
         <Typography variant="h5" padding={1}>
           Order Chainaw
         </Typography>
-        <Stack spacing={1}>
+        <Stack spacing={1} justifyContent="center" alignItems="center">
           <TextField
             id="outlined-basic"
             label="Customer Name"
@@ -81,8 +89,12 @@ function OrderChainSaw() {
             onChange={handleChange}
             name="amount"
           />
+          <Button type="submit" variant="contained" sx={{ width: "10%" }} onClick={handleSubmit}>
+            Submit
+          </Button>
         </Stack>
-        <Typography>Asignee: {}</Typography>
+
+        {/* <Typography>Asignee: {task.asignee}</Typography> */}
       </Box>
     </Stack>
   );
