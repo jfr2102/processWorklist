@@ -65,8 +65,8 @@ const schedule = async () => {
         return tuple.user.username != task.lastAsigned;
       })[0];
     }
+    await Task.updateMany({ _id: task._id }, { asignee: leastbusy.user.username });
   }
-  await Task.updateMany({ _id: task._id }, { asignee: leastbusy.user.username });
 };
 
 const userWorkLoad = async () => {
