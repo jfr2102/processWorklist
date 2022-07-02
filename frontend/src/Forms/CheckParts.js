@@ -1,13 +1,10 @@
 import { Button, Checkbox, FormControlLabel, FormGroup, Stack, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { useState } from "react";
-import { Axios } from "axios";
+import Axios from "axios";
 import { useLocation } from "react-router-dom";
 
-function CheckParts({ host }) {
-  const location = useLocation();
-  const task = location.state ? location.state.task : {};
-
+function CheckParts({ host, task }) {
   const [checkPart, setCheckPart] = useState({
     gear_ok: true,
     case_ok: true,

@@ -31,13 +31,6 @@ const schedule = async () => {
     return a.taskCount - b.taskCount;
   });
 
-  console.log("BUSUYNESS: ");
-  for (busy of busyness.sort((a, b) => {
-    return a.user.taskCount - b.user.taskCount;
-  })) {
-    console.log(busy);
-  }
-
   var admins = busyness.filter((tuple) => {
     return tuple.user.role == "admin";
   });
@@ -155,15 +148,15 @@ app.post("/worklist/addDummy", async (req, res) => {
   res.json("Added Taks");
 });
 
-app.delete("/worklist", async (req, res) => {
-  Task.deleteMany({}, (err, result) => {
-    if (err) {
-      res.status(500).json(err);
-    } else {
-      res.json(result);
-    }
-  });
-});
+// app.delete("/worklist", async (req, res) => {
+//   Task.deleteMany({}, (err, result) => {
+//     if (err) {
+//       res.status(500).json(err);
+//     } else {
+//       res.json(result);
+//     }
+//   });
+// });
 
 app.patch("/worklist/unasign/:task", async (req, res) => {
   console.log("UNASIGN:" + req.params.task);
@@ -178,6 +171,7 @@ app.patch("/worklist/unasign/:task", async (req, res) => {
 
 //UI send to this endpoint when completing the task
 app.delete("/worklist/:task", async (req, res) => {
+  console.log("DONE: ", req.params.task, ", DATABODY: ", req.body);
   task = await Task.findById(req.params.task);
   axios.put(task.callbackUrl, req.body);
 });

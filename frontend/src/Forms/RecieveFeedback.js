@@ -11,19 +11,26 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { useLocation } from "react-router-dom";
-import { Axios } from "axios";
+import Axios from "axios";
+import { useNavigate } from "react-router-dom";
 
-function RecieveFeedback({ host }) {
-  const location = useLocation();
-  const task = location.state ? location.state.task : {};
+function RecieveFeedback({ host, task }) {
+  const navigate = useNavigate();
+  // const location = useLocation();
+  // const [task, setTask] = useState(location.state.task);
   const [feedback, setFeedback] = useState({
     approved: true,
     info: "",
   });
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     console.log("delete: ", task, " with: ", feedback);
-    Axios.delete(host + "/worklist/" + task._id, { data: feedback });
+    await Axios.delete(host + "/worklist/" + task._id, { data: feedback });
+    navigate("/ports/8123/ui");
+  };
+
+  const handleChange = (event) => {
+    setFeedback({ ...feedback, [event.target.name]: event.target.value });
   };
 
   return (
@@ -36,12 +43,18 @@ function RecieveFeedback({ host }) {
           <FormGroup>
             <FormControlLabel control={<Checkbox defaultChecked />} label="Approved Prototype" />
           </FormGroup>
-          <TextField id="outlined-basic" label="Additional Feedback" variant="outlined" />
+          <TextField
+            id="outlined-basic"
+            label="Additional Feedback"
+            variant="outlined"
+            onChange={handleChange}
+            name="info"
+          />
           <Button type="submit" variant="contained" sx={{ width: "10%" }} onClick={handleSubmit}>
             Submit
           </Button>
         </Stack>
-        {/* <Typography padding={1}>Asignee: {task.asignee}</Typography> */}
+        <Typography padding={1}>Asignee: </Typography>
       </Box>
     </Stack>
   );

@@ -14,7 +14,9 @@ import PersonRemoveIcon from "@mui/icons-material/PersonRemove";
 
 import { useNavigate } from "react-router-dom";
 
-function Worklist({ setProcessContext, user, setUser, host }) {
+//TODO: process context visualiesieren irgendwie
+// - anzeigen welche instanz des prozesses es gerade ist
+function Worklist({ setProcessContext, user, setUser, host, setTask }) {
   let navigate = useNavigate();
   const [tasks, setTasks] = useState([]);
 
@@ -40,7 +42,8 @@ function Worklist({ setProcessContext, user, setUser, host }) {
   const handleTask = (task) => {
     console.log(task);
     //setProcessContext(task.processContext);
-    navigate(task.uiLink, { state: task });
+    setTask(task);
+    navigate(task.uiLink);
   };
   return (
     <Box padding={3}>

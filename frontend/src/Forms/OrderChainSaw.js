@@ -3,11 +3,11 @@ import { Box } from "@mui/system";
 import { FormGroup, TextField, Typography, Stack, Button } from "@mui/material";
 import { useState } from "react";
 import { useLocation } from "react-router-dom";
-import { Axios } from "axios";
+import Axios from "axios";
 
-function OrderChainSaw({ host }) {
-  const location = useLocation();
-  const task = location.state ? location.state.task : {};
+function OrderChainSaw({ host, task }) {
+  // const location = useLocation();
+  // const task = location.state ? location.state.task : {};
   const [chainSawOrder, setChainSawOrder] = useState({
     name: "",
     guide_bar: "",

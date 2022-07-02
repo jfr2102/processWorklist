@@ -16,6 +16,8 @@ function App() {
   );
   const baseUrl = "/ports/8123/";
 
+  const [task, setTask] = useState();
+
   return (
     <div>
       <Routes>
@@ -37,6 +39,7 @@ function App() {
               user={user}
               setUser={setUser}
               host={host}
+              setTask={setTask}
             />
           }
         />
@@ -47,6 +50,7 @@ function App() {
               processContext={processContext}
               setProcessContext={setProcessContext}
               host={host}
+              task={task}
             />
           }
         />
@@ -57,6 +61,7 @@ function App() {
               processContext={processContext}
               setProcessContext={setProcessContext}
               host={host}
+              task={task}
             />
           }
         />
@@ -67,6 +72,7 @@ function App() {
               processContext={processContext}
               setProcessContext={setProcessContext}
               host={host}
+              task={task}
             />
           }
         />
