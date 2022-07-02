@@ -15,7 +15,7 @@ import PersonRemoveIcon from "@mui/icons-material/PersonRemove";
 import { useNavigate } from "react-router-dom";
 
 function Worklist({ setProcessContext, user, setUser }) {
-  const local = true;
+  const local = false;
   const host = local ? "http://localhost:22666" : "https://lehre.bpm.in.tum.de/ports/22666";
   let navigate = useNavigate();
   const [tasks, setTasks] = useState([]);

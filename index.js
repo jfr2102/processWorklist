@@ -84,7 +84,7 @@ const userWorkLoad = async () => {
 
 app.get("/", (req, res) => {
   console.log(req.body);
-  res.send("Process Worklist");
+  res.send("Process Worklist API");
 });
 
 app.post("worklist/add", async (req, res) => {
@@ -96,10 +96,11 @@ app.post("worklist/add", async (req, res) => {
     await Task.create({
       callbackId: cpee_callback_id,
       callbackUrl: cpee_callback,
-      // deadline: req.body.deadline,
+      deadline: req.body.deadline,
       taskname: req.body.taskname,
-      uiLink: req.body,
+      uiLink: req.body.uiLink,
       role: req.body.role,
+      asignee: "",
     });
   } catch (exception) {
     console.log(exception);
@@ -109,20 +110,6 @@ app.post("worklist/add", async (req, res) => {
   res.set("CPEE-CALLBACK", true);
   res.json({ test: "newWorkListItem" });
 });
-
-//brauche eig eig nciht da in file / db hier die info habe und client nicht hiervon direkt fetchen muss?
-// app.get("/callbacks/:id", (req, res) => {
-//   console.log("callbacks: " + req.params.id);
-//   axios
-//     .get(`https://cpee.org/flow/engine/${req.params.id}/callbacks/`)
-//     .then((response) => {
-//       console.log(response.data);
-//       res.json({ html: response.data });
-//     })
-//     .catch((err) => {
-//       console.log(err);
-//     });
-// });
 
 app.post("/user", (req, res) => {
   User.create(req.body)
@@ -141,7 +128,6 @@ app.get("/orgmodel", (req, res) => {
 });
 
 app.get("/worklist/:user", (req, res) => {
-  // send back all worklist items that this user could pick up
   console.log(req.params.user);
   Task.find({ asignee: req.params.user }, (err, result) => {
     if (err) {
@@ -151,16 +137,6 @@ app.get("/worklist/:user", (req, res) => {
     }
   });
 });
-
-// app.get("/worklist", (req, res) => {
-//   Task.find({}, (err, result) => {
-//     if (err) {
-//       res.status(500).json(err);
-//     } else {
-//       res.json(result);
-//     }
-//   });
-// });
 
 app.post("/worklist/addDummy", async (req, res) => {
   console.log(req.body);
@@ -203,7 +179,7 @@ app.patch("/worklist/unasign/:task", async (req, res) => {
 //UI send to this endpoint when completing the task
 app.delete("/worklist/:task", async (req, res) => {
   task = await Task.findById(req.params.task);
-  axios.put(task.callbackUrl);
+  axios.put(task.callbackUrl, req.body);
 });
 
 app.listen(port, () => {
