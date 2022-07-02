@@ -23,7 +23,7 @@ function OrderChainSaw({ host }) {
   };
 
   const handleSubmit = () => {
-    Axios.delete(host + "/worklist/" + task.id, { data: chainSawOrder });
+    Axios.delete(host + "/worklist/" + task._id, { data: chainSawOrder });
   };
 
   return (

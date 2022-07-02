@@ -23,7 +23,7 @@ function RecieveFeedback({ host }) {
 
   const handleSubmit = () => {
     console.log("delete: ", task, " with: ", feedback);
-    Axios.delete(host + "/worklist/" + task.id, { data: feedback });
+    Axios.delete(host + "/worklist/" + task._id, { data: feedback });
   };
 
   return (

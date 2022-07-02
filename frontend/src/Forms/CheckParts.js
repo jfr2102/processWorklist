@@ -21,7 +21,7 @@ function CheckParts({ host }) {
   };
 
   const handleSubmit = () => {
-    Axios.delete(host + "/worklist/" + task.id, { data: checkPart });
+    Axios.delete(host + "/worklist/" + task._id, { data: checkPart });
   };
 
   return (
