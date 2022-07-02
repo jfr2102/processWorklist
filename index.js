@@ -25,15 +25,23 @@ app.use(
 
 const schedule = async () => {
   console.log("Scheduling unassigned / overdue tasks");
-  const busyness = await userWorkLoad();
+  var busyness = await userWorkLoad();
+
   busyness.sort((a, b) => {
-    a.user.taskCount - b.user.taskCount;
+    return a.taskCount - b.taskCount;
   });
-  console.log(busyness);
-  console.log("_____________");
+
+  console.log("BUSUYNESS: ");
+  for (busy of busyness.sort((a, b) => {
+    return a.user.taskCount - b.user.taskCount;
+  })) {
+    console.log(busy);
+  }
+
   var admins = busyness.filter((tuple) => {
-    return tuple.user.role === "admin";
+    return tuple.user.role == "admin";
   });
+
   var factory_workers = busyness.filter((tuple) => {
     return tuple.user.role === "factory_worker";
   });
@@ -43,40 +51,35 @@ const schedule = async () => {
 
   unassigned_tasks = await Task.find({ asignee: "" });
   for (task of unassigned_tasks) {
-    switch (task.role) {
-      case "admin":
-        //TODO FILTER wie unten:
-        leastbusy = admins.filter((tuple) => {
-          return tuple.user.username != task.lastAsigned;
-        })[0];
-
-        console.log(leastbusy);
-      case "factory_worker":
-        leastbusy = factory_workers.filter((tuple) => {
-          return tuple.user.username != task.lastAsigned;
-        })[0];
-      case "manager":
-        leastbusy = managers.filter((tuple) => {
-          return tuple.user.username != task.lastAsigned;
-        })[0];
+    //console.log("Unassigned Task; " + task + "/n");
+    if (task.role == "admin") {
+      leastbusy = admins.filter((tuple) => {
+        return tuple.user.username != task.lastAsigned;
+      })[0];
+    } else if (task.role == "factory_worker") {
+      leastbusy = factory_workers.filter((tuple) => {
+        return tuple.user.username != task.lastAsigned;
+      })[0];
+    } else if (task.role == "manager") {
+      leastbusy = managers.filter((tuple) => {
+        return tuple.user.username != task.lastAsigned;
+      })[0];
     }
-
-    await Task.findOneAndUpdate({ _id: task._id }, { asignee: leastbusy.user.username });
   }
+  await Task.updateMany({ _id: task._id }, { asignee: leastbusy.user.username });
 };
 
 const userWorkLoad = async () => {
   // für alle nutzer die tasks rasusuchen die für ihn assigned sind
   users = await User.find({});
   tasks = await Task.find({});
-
   busyness = [];
   for (user of users) {
     //size?
-    hisTasks = tasks.filter((task) => task.assigne === user.username).length;
+    hisTasks = tasks.filter((task) => task.asignee === user.username).length;
     busyness = [...busyness, { user: user, taskCount: hisTasks }];
-    return busyness;
   }
+  return busyness;
 };
 
 app.get("/", (req, res) => {
@@ -108,18 +111,18 @@ app.post("worklist/add", async (req, res) => {
 });
 
 //brauche eig eig nciht da in file / db hier die info habe und client nicht hiervon direkt fetchen muss?
-app.get("/callbacks/:id", (req, res) => {
-  console.log("callbacks: " + req.params.id);
-  axios
-    .get(`https://cpee.org/flow/engine/${req.params.id}/callbacks/`)
-    .then((response) => {
-      console.log(response.data);
-      res.json({ html: response.data });
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-});
+// app.get("/callbacks/:id", (req, res) => {
+//   console.log("callbacks: " + req.params.id);
+//   axios
+//     .get(`https://cpee.org/flow/engine/${req.params.id}/callbacks/`)
+//     .then((response) => {
+//       console.log(response.data);
+//       res.json({ html: response.data });
+//     })
+//     .catch((err) => {
+//       console.log(err);
+//     });
+// });
 
 app.post("/user", (req, res) => {
   User.create(req.body)
@@ -149,15 +152,15 @@ app.get("/worklist/:user", (req, res) => {
   });
 });
 
-app.get("/worklist", (req, res) => {
-  Task.find({}, (err, result) => {
-    if (err) {
-      res.status(500).json(err);
-    } else {
-      res.json(result);
-    }
-  });
-});
+// app.get("/worklist", (req, res) => {
+//   Task.find({}, (err, result) => {
+//     if (err) {
+//       res.status(500).json(err);
+//     } else {
+//       res.json(result);
+//     }
+//   });
+// });
 
 app.post("/worklist/addDummy", async (req, res) => {
   console.log(req.body);
@@ -166,12 +169,13 @@ app.post("/worklist/addDummy", async (req, res) => {
       taskname: req.body.taskname,
       uiLink: req.body.uiLink,
       role: req.body.role,
+      asignee: "",
     });
   } catch (exception) {
     console.log(exception);
   }
   //schedule every unassigned or marked task whenever a new task is added //TODO: also add a timer to reschedule at least once a day e.g. (to check the deadlines)
-  schedule();
+  await schedule();
   res.json("Added Taks");
 });
 
