@@ -58,7 +58,12 @@ function RecieveFeedback({ host, task }) {
       </Box>
 
       <Typography>Process Instance: {task.processInstance}</Typography>
-      <Typography>{JSON.stringify(task.processContext)}</Typography>
+      <Typography> {JSON.stringify(task.processContext)}</Typography>
+      <Box bgcolro="lightblue" paddingTop={5}>
+        {Object.keys(task.processContext).map((key) => (
+          <Typography>{JSON.stringify(task.processCotext[key])}</Typography>
+        ))}
+      </Box>
     </Stack>
   );
 }
