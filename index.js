@@ -36,7 +36,7 @@ const schedule = async () => {
   });
 
   var factory_workers = busyness.filter((tuple) => {
-    return tuple.user.role === "factory_worker";
+    return tuple.user.role === "factory-worker";
   });
   var managers = busyness.filter((tuple) => {
     return tuple.user.role === "manager";
@@ -49,7 +49,7 @@ const schedule = async () => {
       leastbusy = admins.filter((tuple) => {
         return tuple.user.username != task.lastAsigned;
       })[0];
-    } else if (task.role == "factory_worker") {
+    } else if (task.role == "factory-worker") {
       leastbusy = factory_workers.filter((tuple) => {
         return tuple.user.username != task.lastAsigned;
       })[0];
