@@ -88,6 +88,7 @@ app.post("/worklist/add", async (req, res) => {
   const cpee_label = req.headers["cpee-label"];
   console.log(req.headers);
   const deadline = new Date(new Date().getTime + req.body.deadlineMinutes * 60000);
+  console.log(deadline);
 
   try {
     await Task.create({

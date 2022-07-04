@@ -4,7 +4,7 @@ const Task = new mongoose.Schema({
   callbackUrl: { type: String, required: false },
   asignee: { type: String, required: false },
   lastAsigned: { type: String, required: false },
-  deadline: { type: Date, required: false },
+  deadline: { type: Object, required: false },
   taskname: { type: String, required: true },
   uiLink: { type: String, required: false },
   role: {
