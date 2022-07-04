@@ -34,7 +34,13 @@ function RecieveFeedback({ host, task }) {
   };
 
   return (
-    <Stack direction="column" justifyContent="center" alignItems="center" paddingTop={5}>
+    <Stack
+      direction="column"
+      justifyContent="center"
+      alignItems="center"
+      paddingTop={5}
+      spacing={2}
+    >
       <Box bgcolor="whitesmoke" padding={2}>
         <Typography variant="h5" padding={1}>
           Check Parts

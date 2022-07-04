@@ -79,7 +79,11 @@ function Worklist({ setProcessContext, user, setUser, host, setTask }) {
                   <ListItemButton sx={{ color: "grey" }} onClick={() => handleTask(task)}>
                     <ListItemText>
                       <Typography variant="normal">
-                        {task.taskname + " (Process Instance: " + task.processInstance + " )"}
+                        {task.taskname +
+                          " (Process Instance: " +
+                          task.processInstance +
+                          " ) " +
+                          task.deadline}
                       </Typography>
                     </ListItemText>
                   </ListItemButton>
