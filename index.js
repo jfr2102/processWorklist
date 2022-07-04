@@ -197,19 +197,18 @@ app.delete("/worklist/:task", async (req, res) => {
 });
 
 //unassign tasks which are over the daedline
-cron.schedule("* * * * *", () => {
+cron.schedule("* * * * *", async () => {
   console.log("running deadline check each minute");
   tasks = await Task.find({});
   now = new Date();
   overdueTasks = tasks.filter((task) => {
-   return task.deadline.getTime() >= now.getTime()
-  })
+    return task.deadline.getTime() >= now.getTime();
+  });
 
-  for (task of overdueTasks){
-    console.log("OVERDUE TASK: ", task_id, "Deadline: ", task.deadline );
-    Task.findByIdAndUpdate(task_id, {asignee: "", lastAsigned: task.asignee})
+  for (task of overdueTasks) {
+    console.log("OVERDUE TASK: ", task_id, "Deadline: ", task.deadline);
+    Task.findByIdAndUpdate(task_id, { asignee: "", lastAsigned: task.asignee });
   }
-
 });
 
 app.listen(port, () => {
