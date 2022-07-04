@@ -14,6 +14,7 @@ const Task = new mongoose.Schema({
   },
   processContext: { type: Object, required: false },
   processInstance: Number,
+  deadlineRelativeMinutes: Number,
 });
 const model = mongoose.model("Task", Task);
 

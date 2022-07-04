@@ -34,13 +34,16 @@ cron.schedule("* * * * *", async () => {
     return task.deadline.getTime() <= now.getTime();
   });
   console.log(overdueTasks.length);
-  // for (task of tasks) {
-  //   console.log("Task: ", task._id, "Deadline: ", task.deadline, " | ", task.deadline.getTime());
-  //   console.log("Compared to: ", now.getTime());
-  // }
+
   for (var task of overdueTasks) {
-    console.log("OVERDUE TASK: ", task._id, task.asignee);
-    await Task.findOneAndUpdate({ _id: task._id }, { asignee: "", lastAsigned: task.asignee });
+    console.log("OVERDUE TASK: ", task._id, "asignee:", task.asignee);
+    const datenow = new Date();
+    const newDeadline = new Date(datenow.getTime() + task.deadlineRelativeMinutes * 60000);
+
+    await Task.findOneAndUpdate(
+      { _id: task._id },
+      { asignee: "", lastAsigned: task.asignee, deadline: newDeadline }
+    );
   }
   schedule();
 });
@@ -80,6 +83,8 @@ const schedule = async () => {
         return tuple.user.username != task.lastAsigned;
       })[0];
     }
+    console.log("leastbusy: ", leastbusy);
+    console.log("lastAsigned");
     await Task.updateMany({ _id: task._id }, { asignee: leastbusy.user.username });
   }
 };
@@ -108,13 +113,8 @@ app.post("/worklist/add", async (req, res) => {
   const cpee_callback_id = req.headers["cpee-callback-id"];
   const cpee_instance = req.headers["cpee-instance"];
   const cpee_label = req.headers["cpee-label"];
-  console.log(req.headers);
   const datenow = new Date();
   const deadline = new Date(datenow.getTime() + req.body.deadlineMinutes * 60000);
-
-  console.log("CURRENT TIME: ", new Date());
-  console.log(datenow.getTime());
-  console.log(deadline);
 
   try {
     await Task.create({
@@ -127,6 +127,7 @@ app.post("/worklist/add", async (req, res) => {
       role: req.body.role,
       deadline: deadline,
       processContext: req.body.processContext,
+      deadlineRelativeMinutes: req.body.deadlineMinutes,
     });
   } catch (exception) {
     console.log(exception);
@@ -163,16 +164,6 @@ app.get("/worklist/:user", (req, res) => {
     }
   });
 });
-
-// app.delete("/worklist", async (req, res) => {
-//   Task.deleteMany({}, (err, result) => {
-//     if (err) {
-//       res.status(500).json(err);
-//     } else {
-//       res.json(result);
-//     }
-//   });
-// });
 
 app.patch("/worklist/unasign/:task", async (req, res) => {
   console.log("UNASIGN:" + req.params.task);
