@@ -39,8 +39,8 @@ cron.schedule("* * * * *", async () => {
   //   console.log("Compared to: ", now.getTime());
   // }
   for (var task of overdueTasks) {
-    console.log("OVERDUE TASK:");
-    await Task.findByIdAndUpdate(task._id, { asignee: "", lastAsigned: task.asignee });
+    console.log("OVERDUE TASK: ", task._id, task.asignee);
+    await Task.findOneAndUpdate({ _id: task._id }, { asignee: "", lastAsigned: task.asignee });
   }
   schedule();
 });
