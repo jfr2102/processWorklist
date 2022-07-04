@@ -9,6 +9,8 @@ var Task = require("./models/taskModel");
 const { useParams } = require("react-router-dom");
 const mongooseURL =
   "mongodb+srv://admin:HtNuRC5G0imkW7I5@cluster0.w8czfkx.mongodb.net/?retryWrites=true&w=majority";
+var cron = require("node-cron");
+const { updateMany } = require("./models/userModel");
 
 mongoose.connect(mongooseURL);
 
@@ -88,8 +90,10 @@ app.post("/worklist/add", async (req, res) => {
   const cpee_label = req.headers["cpee-label"];
   console.log(req.headers);
   const datenow = new Date();
-  console.log(datenow.getTime());
   const deadline = new Date(datenow + req.body.deadlineMinutes * 60000);
+
+  console.log("CURRENT TIME: ", new Date());
+  console.log(datenow.getTime());
   console.log(deadline);
 
   try {
@@ -190,6 +194,22 @@ app.delete("/worklist/:task", async (req, res) => {
     .then((response) => console.log(response.status))
     .catch((err) => console.log(err));
   res.json(task);
+});
+
+//unassign tasks which are over the daedline
+cron.schedule("* * * * *", () => {
+  console.log("running deadline check each minute");
+  tasks = await Task.find({});
+  now = new Date();
+  overdueTasks = tasks.filter((task) => {
+   return task.deadline.getTime() >= now.getTime()
+  })
+
+  for (task of overdueTasks){
+    console.log("OVERDUE TASK: ", task_id, "Deadline: ", task.deadline );
+    Task.findByIdAndUpdate(task_id, {asignee: "", lastAsigned: task.asignee})
+  }
+
 });
 
 app.listen(port, () => {
