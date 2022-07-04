@@ -82,7 +82,7 @@ function Worklist({ setProcessContext, user, setUser, host, setTask }) {
                         {task.taskname +
                           " (Process Instance: " +
                           task.processInstance +
-                          " ) " +
+                          " ) Due: " +
                           task.deadline.toLocaleString()}
                       </Typography>
                     </ListItemText>
