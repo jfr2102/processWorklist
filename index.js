@@ -28,19 +28,21 @@ app.use(
 //unassign tasks which are over the daedline
 cron.schedule("* * * * *", async () => {
   console.log("running deadline check each minute");
-  tasks = await Task.find({});
+  tasks = await Task.find({ asignee: { $ne: "" } });
   now = new Date();
   overdueTasks = tasks.filter((task) => {
-    return task.deadline.getTime() >= now.getTime();
+    return task.deadline.getTime() <= now.getTime();
   });
-  for (task of tasks) {
-    console.log("Task: ", task._id, "Deadline: ", task.deadline, " | ", task.deadline.getTime());
-    console.log("Compared to: ", now.getTime());
+  console.log(overdueTasks.length);
+  // for (task of tasks) {
+  //   console.log("Task: ", task._id, "Deadline: ", task.deadline, " | ", task.deadline.getTime());
+  //   console.log("Compared to: ", now.getTime());
+  // }
+  for (var task of overdueTasks) {
+    console.log("OVERDUE TASK:");
+    await Task.findByIdAndUpdate(task._id, { asignee: "", lastAsigned: task.asignee });
   }
-  for (task of overdueTasks) {
-    console.log("OVERDUE TASK: ", task_id, "Deadline: ", task.deadline);
-    Task.findByIdAndUpdate(task_id, { asignee: "", lastAsigned: task.asignee });
-  }
+  schedule();
 });
 
 const schedule = async () => {
