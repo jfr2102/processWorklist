@@ -87,6 +87,8 @@ app.post("/worklist/add", async (req, res) => {
   const cpee_instance = req.headers["cpee-instance"];
   const cpee_label = req.headers["cpee-label"];
   console.log(req.headers);
+  const deadline = new Date(new Date().getTime + req.body.deadlineMinutes * 60000);
+
   try {
     await Task.create({
       callbackId: cpee_callback_id,
@@ -96,7 +98,7 @@ app.post("/worklist/add", async (req, res) => {
       asignee: "",
       uiLink: req.body.uiLink,
       role: req.body.role,
-      deadline: req.body.deadline,
+      deadline: deadline,
       processContext: req.body.processContext,
     });
   } catch (exception) {
