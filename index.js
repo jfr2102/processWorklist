@@ -34,7 +34,8 @@ cron.schedule("* * * * *", async () => {
     return task.deadline.getTime() >= now.getTime();
   });
   for (task of tasks) {
-    console.log("Task: ", task._id, "Deadline: ", task.deadline);
+    console.log("Task: ", task._id, "Deadline: ", task.deadline, " | ", task.deadline.getTime());
+    console.log("Compared to: ", now.getTime());
   }
   for (task of overdueTasks) {
     console.log("OVERDUE TASK: ", task_id, "Deadline: ", task.deadline);
