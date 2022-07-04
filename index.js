@@ -54,7 +54,7 @@ const schedule = async () => {
   });
 
   var admins = busyness.filter((tuple) => {
-    return tuple.user.role == "admin";
+    return tuple.user.role === "admin";
   });
 
   var factory_workers = busyness.filter((tuple) => {
@@ -67,15 +67,15 @@ const schedule = async () => {
   unassigned_tasks = await Task.find({ asignee: "" });
   for (task of unassigned_tasks) {
     //console.log("Unassigned Task; " + task + "/n");
-    if (task.role == "admin") {
+    if (task.role === "admin") {
       leastbusy = admins.filter((tuple) => {
-        return tuple.user.username != task.lastAsigned;
+        return tuple.user.username !== task.lastAsigned;
       })[0];
-    } else if (task.role == "factory-worker") {
+    } else if (task.role === "factory-worker") {
       leastbusy = factory_workers.filter((tuple) => {
         return tuple.user.username != task.lastAsigned;
       })[0];
-    } else if (task.role == "manager") {
+    } else if (task.role === "manager") {
       leastbusy = managers.filter((tuple) => {
         return tuple.user.username != task.lastAsigned;
       })[0];
@@ -162,23 +162,6 @@ app.get("/worklist/:user", (req, res) => {
       res.json(result);
     }
   });
-});
-
-app.post("/worklist/addDummy", async (req, res) => {
-  console.log(req.body);
-  try {
-    await Task.create({
-      taskname: req.body.taskname,
-      uiLink: req.body.uiLink,
-      role: req.body.role,
-      asignee: "",
-    });
-  } catch (exception) {
-    console.log(exception);
-  }
-  //schedule every unassigned or marked task whenever a new task is added //TODO: also add a timer to reschedule at least once a day e.g. (to check the deadlines)
-  await schedule();
-  res.json("Added Taks");
 });
 
 // app.delete("/worklist", async (req, res) => {
